@@ -1,0 +1,71 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Category {
+  id          Int @id @default(autoincrement())
+  name        String @unique
+  professionals Professional[]
+}
+
+model Professional {
+  id                    Int @id @default(autoincrement())
+  ragione_sociale       String?
+  nome                  String
+  cognome               String
+  telefono              String
+  email                 String @unique
+  sito_web              String?
+  indirizzo_completo    String
+  p_iva                 String?
+  indirizzo_albarella   String?
+  foto_profilo          String?
+  category_id           Int
+  category              Category @relation(fields: [category_id], references: [id])
+  specialist_answers    String? // JSON string for specialist questions
+  reviews               Review[]
+  created_at            DateTime @default(now())
+  updated_at            DateTime @updatedAt
+}
+
+model Evaluator {
+  id                  Int @id @default(autoincrement())
+  nome                String
+  cognome             String
+  email               String @unique
+  telefono            String
+  indirizzo           String
+  testimonial_choice  Boolean @default(false)
+  verified            Boolean @default(false)
+  reviews             Review[]
+  created_at          DateTime @default(now())
+}
+
+model Review {
+  id                    Int @id @default(autoincrement())
+  professional_id       Int
+  evaluator_id          Int
+  status                String @default("BOZZA")
+  ratings               String // JSON string for 10 ratings 1-5
+  intervention_answers  String? // JSON string for intervention questions
+  testimonial           String?
+  created_at            DateTime @default(now())
+  published_at          DateTime?
+  professional          Professional @relation(fields: [professional_id], references: [id])
+  evaluator             Evaluator @relation(fields: [evaluator_id], references: [id])
+}
+
+model Sponsor {
+  id    Int @id @default(autoincrement())
+  name  String
+  logo  String?
+  link  String?
+}
